@@ -64,4 +64,3 @@ curl -N "http://localhost:3000/api/scan?domain=example.com"
 
 ## ⚠️ Disclaimer
 ABS Scan is made for authorized security audits, bug bounties, and network mapping. Please use responsibly and ensure you have permission to scan the target domains.
-```
