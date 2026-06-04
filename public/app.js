@@ -31,6 +31,7 @@ const statOffline = document.getElementById('stat-offline');
 const filterBtns = document.querySelectorAll('.filter-btn');
 const countAll = document.getElementById('count-all');
 const countLive = document.getElementById('count-live');
+const countHighValue = document.getElementById('count-high-value');
 const countResolved = document.getElementById('count-resolved');
 const countOffline = document.getElementById('count-offline');
 const tableSearch = document.getElementById('table-search');
@@ -42,6 +43,23 @@ const exportJsonLink = document.getElementById('export-json');
 const resultsTable = document.getElementById('results-table');
 const resultsBody = document.getElementById('results-body');
 const emptyState = document.getElementById('empty-state');
+
+// API Modal Elements
+const apiDocsBtn = document.getElementById('api-docs-btn');
+const apiModal = document.getElementById('api-modal');
+const closeModal = document.querySelector('.close-modal');
+
+if (apiDocsBtn) {
+  apiDocsBtn.addEventListener('click', () => apiModal.classList.remove('hidden'));
+}
+if (closeModal) {
+  closeModal.addEventListener('click', () => apiModal.classList.add('hidden'));
+}
+if (apiModal) {
+  apiModal.addEventListener('click', (e) => {
+    if (e.target === apiModal) apiModal.classList.add('hidden');
+  });
+}
 
 // Source Badges
 const badgeCrt = document.getElementById('badge-crt');
@@ -202,6 +220,7 @@ function resetState() {
   
   countAll.innerText = '0';
   countLive.innerText = '0';
+  if(countHighValue) countHighValue.innerText = '0';
   countResolved.innerText = '0';
   countOffline.innerText = '0';
 
@@ -274,8 +293,14 @@ function updateStatsCounters() {
   // Update filter counts
   countAll.innerText = total;
   countLive.innerText = webLive;
+  if(countHighValue) countHighValue.innerText = results.filter(r => isHighValue(r.subdomain)).length;
   countResolved.innerText = resolved - webLive; // Resolved but no web server
   countOffline.innerText = offline;
+}
+
+function isHighValue(subdomain) {
+  const keywords = ['api', 'admin', 'dev', 'stage', 'staging', 'vpn', 'test', 'portal', 'secure'];
+  return keywords.some(kw => subdomain.toLowerCase().includes(kw));
 }
 
 // Check if a result matches active filter and search query
@@ -287,6 +312,7 @@ function matchesFilterAndSearch(item) {
   // Filter logic
   if (activeFilter === 'all') return true;
   if (activeFilter === 'live') return item.live === true;
+  if (activeFilter === 'high-value') return isHighValue(item.subdomain);
   if (activeFilter === 'resolved') return item.ip !== null && item.live === false;
   if (activeFilter === 'offline') return item.ip === null;
 
@@ -323,6 +349,10 @@ function renderTable() {
 function createRowElement(item) {
   const tr = document.createElement('tr');
   tr.id = `row-${item.subdomain.replace(/\./g, '-')}`;
+  const highValue = isHighValue(item.subdomain);
+  if (highValue) {
+    tr.classList.add('high-value-row');
+  }
 
   // Subdomain column
   const subTd = document.createElement('td');
@@ -343,6 +373,9 @@ function createRowElement(item) {
     statusBadge = `<span class="status-badge status-dns">DNS Only</span>`;
   } else {
     statusBadge = `<span class="status-badge status-offline">Offline</span>`;
+  }
+  if (highValue) {
+    statusBadge += ` <span class="status-badge status-high-value">API/Target</span>`;
   }
   statusTd.innerHTML = statusBadge;
 

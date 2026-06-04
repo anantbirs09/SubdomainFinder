@@ -25,6 +25,7 @@
         <h1 class="logo-text">ABS<span>SCAN</span></h1>
       </div>
       <p class="tagline">Enterprise-grade subdomain intelligence & verification engine</p>
+      <button id="api-docs-btn" class="btn btn-secondary" style="margin-top: 10px; font-size: 0.8rem; padding: 0.5rem 1rem;">View API Docs</button>
     </header>
 
     <!-- Control Panel -->
@@ -105,6 +106,7 @@
         <div class="filter-controls">
           <button class="filter-btn active" data-filter="all">All (<span id="count-all">0</span>)</button>
           <button class="filter-btn text-cyan" data-filter="live">Web Live (<span id="count-live">0</span>)</button>
+          <button class="filter-btn text-warning" data-filter="high-value" style="color: var(--warning-amber);">High-Value API (<span id="count-high-value">0</span>)</button>
           <button class="filter-btn text-green" data-filter="resolved">DNS Only (<span id="count-resolved">0</span>)</button>
           <button class="filter-btn text-red" data-filter="offline">Offline (<span id="count-offline">0</span>)</button>
         </div>
@@ -152,6 +154,21 @@
         </div>
       </div>
     </main>
+    
+    <!-- API Docs Modal -->
+    <div id="api-modal" class="modal hidden">
+      <div class="modal-content glass">
+        <span class="close-modal">&times;</span>
+        <h2>API Documentation</h2>
+        <p>You can integrate ABS Scan programmatically using Server-Sent Events (SSE).</p>
+        <div style="background: rgba(0,0,0,0.5); padding: 1rem; border-radius: 8px; font-family: monospace; font-size: 0.85rem; color: var(--accent-cyan); overflow-x: auto; margin-top: 1rem;">
+          curl -N http://localhost:3000/api/scan?domain=example.com
+        </div>
+        <p style="margin-top: 1rem; font-size: 0.85rem; color: var(--text-muted);">
+          The API streams JSON data for each subdomain as it is discovered and verified.
+        </p>
+      </div>
+    </div>
   </div>
 
   <!-- Footer -->
