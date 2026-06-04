@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ABS SCAN - Premium Subdomain Finder</title>
+  <meta name="description" content="Discover, verify, and monitor subdomains with real-time analytics and web verification.">
+  <!-- Google Fonts: Space Grotesk, Inter, JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+  <!-- CSS Styles -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Background Glow FX -->
+  <div class="glow-bg-1"></div>
+  <div class="glow-bg-2"></div>
+
+  <div class="app-container">
+    <!-- Header -->
+    <header class="app-header">
+      <div class="logo-area">
+        <span class="logo-icon">▲</span>
+        <h1 class="logo-text">ABS<span>SCAN</span></h1>
+      </div>
+      <p class="tagline">Enterprise-grade subdomain intelligence & verification engine</p>
+    </header>
+
+    <!-- Control Panel -->
+    <section class="control-panel glass">
+      <form id="scan-form" class="scan-form">
+        <div class="input-wrapper">
+          <input 
+            type="text" 
+            id="domain-input" 
+            name="domain" 
+            placeholder=" " 
+            required 
+            pattern="^(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z0-9][a-z0-9-]{0,61}[a-z0-9]$"
+            title="Please enter a valid domain name (e.g. example.com)"
+            autocomplete="off"
+          >
+          <label for="domain-input">Target Domain (e.g. github.com)</label>
+          <div class="input-focus-border"></div>
+        </div>
+        <div class="button-group">
+          <button type="submit" id="scan-btn" class="btn btn-primary">
+            <span class="btn-text">Initiate Scan</span>
+            <div class="scan-pulse-icon"></div>
+          </button>
+          <button type="button" id="cancel-btn" class="btn btn-danger hidden">
+            <span>Cancel Scan</span>
+          </button>
+        </div>
+      </form>
+    </section>
+
+    <!-- Dashboard Status Grid (Hidden initially) -->
+    <div id="stats-panel" class="stats-panel grid-container hidden">
+      <div class="stat-card glass">
+        <div class="stat-header">Total Discovered</div>
+        <div class="stat-value" id="stat-total">0</div>
+        <div class="stat-desc">Unique names found</div>
+      </div>
+      <div class="stat-card glass border-green">
+        <div class="stat-header">DNS Resolved</div>
+        <div class="stat-value text-green" id="stat-resolved">0</div>
+        <div class="stat-desc">Active IP mappings</div>
+      </div>
+      <div class="stat-card glass border-cyan">
+        <div class="stat-header">Web-Live (HTTP/S)</div>
+        <div class="stat-value text-cyan" id="stat-web">0</div>
+        <div class="stat-desc">Web server responding</div>
+      </div>
+      <div class="stat-card glass border-red">
+        <div class="stat-header">Offline / Local</div>
+        <div class="stat-value text-red" id="stat-offline">0</div>
+        <div class="stat-desc">No DNS resolution</div>
+      </div>
+    </div>
+
+    <!-- Active Scan Progress -->
+    <section id="progress-container" class="progress-container glass hidden">
+      <div class="progress-meta">
+        <span id="progress-status" class="progress-status">Preparing scanner...</span>
+        <span id="progress-percent" class="progress-percent">0%</span>
+      </div>
+      <div class="progress-bar-wrapper">
+        <div id="progress-bar" class="progress-bar"></div>
+      </div>
+      <!-- Real-time Source badges -->
+      <div class="source-badges" id="source-badges">
+        <span class="badge" id="badge-crt">crt.sh: <span class="badge-count">-</span></span>
+        <span class="badge" id="badge-av">AlienVault: <span class="badge-count">-</span></span>
+        <span class="badge" id="badge-ht">HackerTarget: <span class="badge-count">-</span></span>
+        <span class="badge" id="badge-brute">Brute-force: <span class="badge-count">-</span></span>
+      </div>
+    </section>
+
+    <!-- Main Content Workspace -->
+    <main class="main-workspace glass">
+      <!-- Workspace Controls -->
+      <div class="workspace-header">
+        <div class="filter-controls">
+          <button class="filter-btn active" data-filter="all">All (<span id="count-all">0</span>)</button>
+          <button class="filter-btn text-cyan" data-filter="live">Web Live (<span id="count-live">0</span>)</button>
+          <button class="filter-btn text-green" data-filter="resolved">DNS Only (<span id="count-resolved">0</span>)</button>
+          <button class="filter-btn text-red" data-filter="offline">Offline (<span id="count-offline">0</span>)</button>
+        </div>
+        <div class="search-export-controls">
+          <input type="text" id="table-search" placeholder="Search subdomains..." autocomplete="off">
+          <div class="dropdown">
+            <button id="export-btn" class="btn btn-secondary" disabled>Export Data</button>
+            <div class="dropdown-content">
+              <a href="#" id="export-csv">Export to CSV</a>
+              <a href="#" id="export-json">Export to JSON</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Results View -->
+      <div class="results-table-container">
+        <table id="results-table" class="results-table">
+          <thead>
+            <tr>
+              <th>Subdomain</th>
+              <th>IP Address</th>
+              <th>Status</th>
+              <th>Title / Web Server</th>
+              <th>Source(s)</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody id="results-body">
+            <!-- Dynamic Injection -->
+          </tbody>
+        </table>
+
+        <!-- Empty / Welcome State -->
+        <div id="empty-state" class="empty-state">
+          <div class="radar-container">
+            <div class="radar-circle circle1"></div>
+            <div class="radar-circle circle2"></div>
+            <div class="radar-circle circle3"></div>
+            <div class="radar-sweep"></div>
+            <div class="radar-dot"></div>
+          </div>
+          <h3>Ready for Discovery</h3>
+          <p>Enter a target domain name above to analyze DNS records, Certificate Transparency logs, and active web properties.</p>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Footer -->
+  <footer class="app-footer">
+    <p>ABS Scan &copy; 2026. Made for security audits & network mapping. Use responsibly.</p>
+  </footer>
+
+  <!-- App Logic -->
+  <script src="app.js"></script>
+</body>
+</html>
